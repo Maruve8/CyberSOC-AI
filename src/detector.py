@@ -139,23 +139,35 @@ def predict_events(data, models):
         "reconstruction_error": reconstruction_error,
     })
 
-    # Lógica combinada inicial:
-    #0 = normal
-    #1 = alerta
-    #2 = alerta de mayor confianza cuando coinciden ambos modelos
+    # -----------------------------------------------------
+    # Evaluación combinada del riesgo
+    # -----------------------------------------------------
+    # La severidad depende de qué modelo haya detectado el evento:
+    # 0 = normal
+    # 1 = medio: solo el Autoencoder detecta anomalía
+    # 2 = alto: el Random Forest detecta ataque
+    # 3 = crítico: ambos modelos coinciden
+
     results["alert_level"] = np.select(
         [
+            # Ambos modelos detectan comportamiento sospechoso
             (results["random_forest"] == 1)
             & (results["autoencoder"] == 1),
 
+            # El Random Forest detecta ataque, pero el Autoencoder no
             (results["random_forest"] == 1)
-            | (results["autoencoder"] == 1),
+            & (results["autoencoder"] == 0),
+
+            # Solo el Autoencoder detecta una anomalía
+            (results["random_forest"] == 0)
+            & (results["autoencoder"] == 1),
         ],
         [
-            2,
-            1,
+            3,  # Crítico
+            2,  # Alto
+            1,  # Medio
         ],
-        default=0,
+        default=0,  # Normal
     )
 
     return results
