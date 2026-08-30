@@ -211,167 +211,167 @@ if "results" in st.session_state:
         hide_index=True
     )
 
-# -----------------------------------------------------
-# Detalle de alertas
-# -----------------------------------------------------
+    # -----------------------------------------------------
+    # Detalle de alertas
+    # -----------------------------------------------------
 
-st.subheader("Detalle de alerta")
+    st.subheader("Detalle de alerta")
 
-#Trabajamos solo con los eventos que han generado nivel de alerta
-alert_rows = display_results[
-    display_results["alert_level"] > 0
-].copy()
+    #Trabajamos solo con los eventos que han generado nivel de alerta
+    alert_rows = display_results[
+        display_results["alert_level"] > 0
+    ].copy()
 
-if alert_rows.empty:
-    st.info("No se han detectado alertas en esta simulación.")
+    if alert_rows.empty:
+        st.info("No se han detectado alertas en esta simulación.")
 
-else:
-    #El selector muestra sólo la información generada por el sistema
-    #La etiqueta real del dataset se enseñará aparte como dato de validación
-    alert_rows["selector"] = alert_rows.apply(
-        lambda row: (
-            f"Evento {row.name + 1} - "
-            f"Riesgo {row['Estado']}"
-        ),
-        axis=1
-    )
-
-    selected_alert = st.selectbox(
-        "Selecciona una alerta para analizarla",
-        alert_rows["selector"].tolist()
-    )
-
-    #Recuperar la fila seleccionada
-    selected_row = alert_rows[
-        alert_rows["selector"] == selected_alert
-    ].iloc[0]
-
-    col_a, col_b, col_c, col_d = st.columns(4)
-
-    col_a.metric(
-        "Severidad",
-        selected_row["Estado"]
-    )
-
-    col_b.metric(
-        "Random Forest",
-        selected_row["Random Forest"]
-    )
-
-    col_c.metric(
-        "Autoencoder",
-        selected_row["Autoencoder"]
-    )
-
-    col_d.metric(
-        "Error reconstrucción",
-        f"{selected_row['Error de reconstrucción']:.4f}"
-    )
-
-    #En modo demo conocemos la etiqueta real de CIC-IDS2017
-    #Se muestra solo para comparar la detección con la realidad
-    st.caption(
-        f"Validación de la simulación — Etiqueta real CIC-IDS2017: "
-        f"**{selected_row['tipo_real']}**"
-    )
-
-    st.markdown("#### Interpretación")
-
-    #Explicación del resultado antes IA generativa
-    if selected_row["alert_level"] == 3:
-        st.warning(
-            "Los dos modelos coinciden en identificar comportamiento "
-            "sospechoso. El evento debe priorizarse para su revisión."
+    else:
+        #El selector muestra sólo la información generada por el sistema
+        #La etiqueta real del dataset se enseñará aparte como dato de validación
+        alert_rows["selector"] = alert_rows.apply(
+            lambda row: (
+                f"Evento {row.name + 1} - "
+                f"Riesgo {row['Estado']}"
+            ),
+            axis=1
         )
 
-    elif selected_row["alert_level"] == 2:
-        st.warning(
-            "El Random Forest identifica un patrón compatible con tráfico "
-            "malicioso, aunque el Autoencoder no supera su umbral de anomalía."
+        selected_alert = st.selectbox(
+            "Selecciona una alerta para analizarla",
+            alert_rows["selector"].tolist()
         )
 
-    elif selected_row["alert_level"] == 1:
-        st.warning(
-            "El Autoencoder detecta un comportamiento anómalo que no coincide "
-            "con los patrones de ataque conocidos por el Random Forest."
+        #Recuperar la fila seleccionada
+        selected_row = alert_rows[
+            alert_rows["selector"] == selected_alert
+        ].iloc[0]
+
+        col_a, col_b, col_c, col_d = st.columns(4)
+
+        col_a.metric(
+            "Severidad",
+            selected_row["Estado"]
         )
 
-    st.markdown("#### Recomendación")
-
-    # Recomendación básica para el analista según la severidad detectada
-    if selected_row["alert_level"] == 3:
-        st.error(
-            "Priorizar la investigación del evento. Revisar el tráfico asociado, "
-            "comprobar posibles fuentes maliciosas y valorar medidas inmediatas "
-            "de contención si se confirma la amenaza."
+        col_b.metric(
+            "Random Forest",
+            selected_row["Random Forest"]
         )
 
-    elif selected_row["alert_level"] == 2:
-        st.info(
-            "Revisar el evento y contrastarlo con otras evidencias disponibles. "
-            "El modelo supervisado identifica un patrón de ataque conocido, "
-            "por lo que conviene analizar su origen y destino."
+        col_c.metric(
+            "Autoencoder",
+            selected_row["Autoencoder"]
         )
 
-    elif selected_row["alert_level"] == 1:
-        st.info(
-            "Investigar el comportamiento anómalo y comprobar si corresponde "
-            "a una actividad legítima no observada durante el entrenamiento "
-            "o a una posible amenaza desconocida."
+        col_d.metric(
+            "Error reconstrucción",
+            f"{selected_row['Error de reconstrucción']:.4f}"
         )
-    
-    st.markdown("#### Análisis con IA generativa")
 
-    if st.button("Generar análisis con IA", key="generate_ai_analysis"):
-        with st.spinner("Generando análisis local..."):
-            ai_analysis = generate_soc_analysis(
-                selected_row["Estado"],
-                selected_row["Random Forest"],
-                selected_row["Autoencoder"],
-                selected_row["Error de reconstrucción"],
-                models["threshold"],
-            )
+        #En modo demo conocemos la etiqueta real de CIC-IDS2017
+        #Se muestra solo para comparar la detección con la realidad
+        st.caption(
+            f"Validación de la simulación — Etiqueta real CIC-IDS2017: "
+            f"**{selected_row['tipo_real']}**"
+        )
 
-        if ai_analysis:
-            st.session_state["ai_analysis"] = ai_analysis
-            st.session_state["ai_analysis_alert"] = selected_alert
-        else:
+        st.markdown("#### Interpretación")
+
+        #Explicación del resultado antes IA generativa
+        if selected_row["alert_level"] == 3:
             st.warning(
-                "No se pudo generar el análisis con IA. "
-                "Comprueba que Ollama esté disponible."
+                "Los dos modelos coinciden en identificar comportamiento "
+                "sospechoso. El evento debe priorizarse para su revisión."
             )
 
-    if (
-        "ai_analysis" in st.session_state
-        and st.session_state.get("ai_analysis_alert") == selected_alert
-    ):
-        st.markdown(st.session_state["ai_analysis"])
+        elif selected_row["alert_level"] == 2:
+            st.warning(
+                "El Random Forest identifica un patrón compatible con tráfico "
+                "malicioso, aunque el Autoencoder no supera su umbral de anomalía."
+            )
 
-    # -----------------------------------------------------
-    # Información del sistema
-    # -----------------------------------------------------
+        elif selected_row["alert_level"] == 1:
+            st.warning(
+                "El Autoencoder detecta un comportamiento anómalo que no coincide "
+                "con los patrones de ataque conocidos por el Random Forest."
+            )
 
-    with st.expander("¿Cómo se interpreta el análisis?"):
+        st.markdown("#### Recomendación")
 
-        st.markdown(
-            """
-            **Normal**  
-            Ninguno de los modelos identifica comportamiento sospechoso.
+        # Recomendación básica para el analista según la severidad detectada
+        if selected_row["alert_level"] == 3:
+            st.error(
+                "Priorizar la investigación del evento. Revisar el tráfico asociado, "
+                "comprobar posibles fuentes maliciosas y valorar medidas inmediatas "
+                "de contención si se confirma la amenaza."
+            )
 
-            **Medio**  
-            El Autoencoder detecta una anomalía, aunque el Random Forest
-            no identifica un ataque conocido.
+        elif selected_row["alert_level"] == 2:
+            st.info(
+                "Revisar el evento y contrastarlo con otras evidencias disponibles. "
+                "El modelo supervisado identifica un patrón de ataque conocido, "
+                "por lo que conviene analizar su origen y destino."
+            )
 
-            **Alto**  
-            El Random Forest identifica un patrón de tráfico malicioso,
-            aunque el Autoencoder no lo considera anómalo.
+        elif selected_row["alert_level"] == 1:
+            st.info(
+                "Investigar el comportamiento anómalo y comprobar si corresponde "
+                "a una actividad legítima no observada durante el entrenamiento "
+                "o a una posible amenaza desconocida."
+            )
+        
+        st.markdown("#### Análisis con IA generativa")
 
-            **Crítico**  
-            Random Forest y Autoencoder coinciden en identificar
-            comportamiento sospechoso.
+        if st.button("Generar análisis con IA", key="generate_ai_analysis"):
+            with st.spinner("Generando análisis local..."):
+                ai_analysis = generate_soc_analysis(
+                    selected_row["Estado"],
+                    selected_row["Random Forest"],
+                    selected_row["Autoencoder"],
+                    selected_row["Error de reconstrucción"],
+                    models["threshold"],
+                )
 
-            El Autoencoder utiliza un umbral de error de reconstrucción de
-            **0.5459**. Los valores superiores a este umbral se consideran
-            anómalos.
-            """
-        )
+            if ai_analysis:
+                st.session_state["ai_analysis"] = ai_analysis
+                st.session_state["ai_analysis_alert"] = selected_alert
+            else:
+                st.warning(
+                    "No se pudo generar el análisis con IA. "
+                    "Comprueba que Ollama esté disponible."
+                )
+
+        if (
+            "ai_analysis" in st.session_state
+            and st.session_state.get("ai_analysis_alert") == selected_alert
+        ):
+            st.markdown(st.session_state["ai_analysis"])
+
+        # -----------------------------------------------------
+        # Información del sistema
+        # -----------------------------------------------------
+
+        with st.expander("¿Cómo se interpreta el análisis?"):
+
+            st.markdown(
+                """
+                **Normal**  
+                Ninguno de los modelos identifica comportamiento sospechoso.
+
+                **Medio**  
+                El Autoencoder detecta una anomalía, aunque el Random Forest
+                no identifica un ataque conocido.
+
+                **Alto**  
+                El Random Forest identifica un patrón de tráfico malicioso,
+                aunque el Autoencoder no lo considera anómalo.
+
+                **Crítico**  
+                Random Forest y Autoencoder coinciden en identificar
+                comportamiento sospechoso.
+
+                El Autoencoder utiliza un umbral de error de reconstrucción de
+                **0.5459**. Los valores superiores a este umbral se consideran
+                anómalos.
+                """
+            )
