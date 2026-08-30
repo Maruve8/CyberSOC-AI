@@ -14,10 +14,9 @@ data/raw/
 data/processed/
 
 # Models
-models/*.keras
+# Los modelos entrenados se incluyen para poder ejecutar la aplicación
 models/*.h5
 models/*.pkl
-models/*.joblib
 
 # Environment variables
 .env
