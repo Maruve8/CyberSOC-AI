@@ -1,0 +1,266 @@
+/* ---------------------------------------------------------
+   Interfaz general
+--------------------------------------------------------- */
+
+/*Ocultar controles Streamlit */
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+header[data-testid="stHeader"] {
+    visibility: hidden;
+    height: 0;
+}
+
+div[data-testid="stToolbar"] {
+    visibility: hidden;
+}
+
+/* Fondo general de CyberSOC-AI */
+.stApp {
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(0, 140, 255, 0.16),
+            transparent 32%
+        ),
+        linear-gradient(
+            180deg,
+            #07111f 0%,
+            #0a101a 45%,
+            #080d14 100%
+        );
+}
+
+/*Limitar el ancho */
+.block-container {
+    max-width: 1250px;
+
+    /* En monitores grandes baja el contenido.
+       En pantallas pequeñas reduce el espacio. */
+    padding-top: clamp(1.5rem, 8vh, 6rem);
+    padding-bottom: clamp(1.5rem, 5vh, 4rem);
+}
+
+/* ---------------------------------------------------------
+   Cabecera principal
+--------------------------------------------------------- */
+
+.cyber-hero {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 3.5rem 2rem;
+    margin-bottom: 2.5rem;
+
+    border: 1px solid rgba(67, 181, 255, 0.22);
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            rgba(7, 17, 31, 0.88),
+            rgba(7, 17, 31, 0.95)
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 39px,
+            rgba(80, 170, 255, 0.05) 40px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 39px,
+            rgba(80, 170, 255, 0.05) 40px
+        );
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.30),
+        inset 0 0 80px rgba(0, 128, 255, 0.05);
+}
+
+.cyber-shield {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.cyber-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 3.4rem;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.cyber-title span {
+    color: #43b5ff;
+}
+
+.cyber-subtitle {
+    width: 100%;
+    max-width: none;
+    margin: 0.8rem 0 0;
+    color: #b7c5d8;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.cyber-tech {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.8rem;
+}
+
+.cyber-tech span {
+    padding: 0.45rem 0.9rem;
+
+    border: 1px solid rgba(67, 181, 255, 0.30);
+    border-radius: 30px;
+
+    background: rgba(67, 181, 255, 0.08);
+    color: #9cd8ff;
+
+    font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------------
+   Presentación
+--------------------------------------------------------- */
+
+.soc-intro {
+    max-width: 760px;
+    margin: 0 auto 1.8rem auto;
+    text-align: center;
+}
+
+.soc-intro-title {
+    margin-bottom: 0.8rem;
+    color: #ffffff;
+    font-size: 1.65rem;
+    font-weight: 700;
+}
+
+.soc-intro-text {
+    color: #aebccd;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+
+/* ---------------------------------------------------------
+   Botón principal
+--------------------------------------------------------- */
+
+/* El contenedor ocupa todo el ancho para poder centrar el botón */
+
+
+/* Botón Ejecutar simulación */
+div[data-testid="stButton"] > button {
+    width: 250px;
+    min-height: 50px;
+
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+
+    border: 1px solid rgba(67, 181, 255, 0.65);
+    border-radius: 10px;
+
+    background: linear-gradient(
+        90deg,
+        #0879d9,
+        #14a7e8
+    );
+
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    box-shadow: 0 8px 30px rgba(0, 140, 255, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Efecto al pasar el ratón */
+div[data-testid="stButton"] > button:hover {
+    transform: translateY(-1px);
+    border-color: #78cfff;
+
+    box-shadow:
+        0 10px 35px rgba(0, 160, 255, 0.35);
+}
+
+/*streamlit envuelve el texto del botón en un párrafo*/
+div[data-testid="stButton"] > button p {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------
+   Fondo tecnológico del encabezado
+--------------------------------------------------------- */
+
+.cyber-hero {
+    background-image:
+        /* Nodos luminosos */
+        radial-gradient(
+            circle at 12% 25%,
+            rgba(67, 181, 255, 0.32) 0 2px,
+            transparent 3px
+        ),
+        radial-gradient(
+            circle at 28% 70%,
+            rgba(67, 181, 255, 0.24) 0 2px,
+            transparent 3px
+        ),
+        radial-gradient(
+            circle at 72% 28%,
+            rgba(67, 181, 255, 0.28) 0 2px,
+            transparent 3px
+        ),
+        radial-gradient(
+            circle at 88% 72%,
+            rgba(67, 181, 255, 0.24) 0 2px,
+            transparent 3px
+        ),
+
+        /* Líneas de red */
+        linear-gradient(
+            60deg,
+            transparent 49.5%,
+            rgba(67, 181, 255, 0.055) 50%,
+            transparent 50.5%
+        ),
+        linear-gradient(
+            -60deg,
+            transparent 49.5%,
+            rgba(67, 181, 255, 0.055) 50%,
+            transparent 50.5%
+        ),
+        linear-gradient(
+            90deg,
+            transparent 49.5%,
+            rgba(67, 181, 255, 0.035) 50%,
+            transparent 50.5%
+        );
+
+    background-size:
+        190px 150px,
+        230px 170px,
+        210px 160px,
+        250px 180px,
+        120px 120px,
+        120px 120px,
+        120px 120px;
+}
+

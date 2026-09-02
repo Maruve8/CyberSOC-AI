@@ -4,20 +4,6 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-
-# ---------------------------------------------------------
-# Configuración del proyecto
-# ---------------------------------------------------------
-
-#Añadir raíz del proyecto al path para poder importar desde src
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(BASE_DIR))
-
-from src.detector import load_models, predict_events
-from src.simulator import load_simulation_sample
-from src.generative import generate_soc_analysis
-
-
 # ---------------------------------------------------------
 # Configuración de la interfaz
 # ---------------------------------------------------------
@@ -28,11 +14,55 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🛡️ CyberSOC-AI")
-st.caption("Sistema inteligente de apoyo a la detección de amenazas de red")
 
-st.divider()
+# ---------------------------------------------------------
+# Configuración del proyecto
+# ---------------------------------------------------------
 
+#Añadir raíz del proyecto al path para poder importar desde src
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+#Cargar los estilos
+CSS_FILE = BASE_DIR / "app" / "style.css"
+
+with open(CSS_FILE, encoding="utf-8") as css_file:
+    st.markdown(
+        f"<style>{css_file.read()}</style>",
+        unsafe_allow_html=True
+    )
+
+
+from src.detector import load_models, predict_events
+from src.simulator import load_simulation_sample
+from src.generative import generate_soc_analysis
+
+
+
+
+# ---------------------------------------------------------
+# Cabecera principal
+# ---------------------------------------------------------
+
+st.markdown(
+    """
+<div class="cyber-hero">
+    <div class="cyber-shield">🛡️</div>
+    <div class="cyber-title">CyberSOC<span>-AI</span></div>
+    <p class="cyber-subtitle">
+        Inteligencia artificial aplicada a la detección
+        y análisis de amenazas de red
+    </p>
+    <div class="cyber-tech">
+        <span>Random Forest</span>
+        <span>Autoencoder</span>
+        <span>Detección de anomalías</span>
+        <span>IA generativa local</span>
+    </div>
+</div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ---------------------------------------------------------
 # Carga de modelos
@@ -52,23 +82,35 @@ models = get_models()
 # Presentación
 # ---------------------------------------------------------
 
-st.subheader("Centro de operaciones de seguridad")
-
-st.write(
-    "CyberSOC-AI analiza tráfico de red mediante dos modelos de Inteligencia "
-    "Artificial: **Random Forest**, como detector principal de ataques conocidos, "
-    "y **Autoencoder**, como detector complementario de anomalías."
+st.markdown(
+    """
+<div class="soc-intro">
+    <div class="soc-intro-title">Centro de operaciones de seguridad</div>
+    <div class="soc-intro-text">
+        CyberSOC-AI combina aprendizaje supervisado y Deep Learning
+        para identificar patrones asociados a ataques conocidos
+        y detectar comportamientos anómalos en el tráfico de red.
+    </div>
+</div>
+    """,
+    unsafe_allow_html=True
 )
-
 
 # ---------------------------------------------------------
 # Simulación
 # ---------------------------------------------------------
 
-if st.button(
-    "▶ Ejecutar simulación",
-    type="primary"
-):
+# Centrar el botón principal
+button_left, button_center, button_right = st.columns([1, 1, 1])
+
+with button_center:
+    run_simulation = st.button(
+        "▶ Analizar tráfico",
+        type="primary",
+        use_container_width=True
+    )
+
+if run_simulation:
 
     with st.spinner("Analizando tráfico de red..."):
 
