@@ -107,7 +107,7 @@ with button_center:
     run_simulation = st.button(
         "▶ Analizar tráfico",
         type="primary",
-        use_container_width=True
+        width="stretch"
     )
 
 if run_simulation:
@@ -165,7 +165,6 @@ if "results" in st.session_state:
     ).sum()
 
 
-    st.success("Análisis completado")
 
     st.subheader("Resumen de actividad")
 
@@ -189,6 +188,26 @@ if "results" in st.session_state:
     col4.metric(
         "Sin alerta",
         normal_events
+    )
+
+    # -----------------------------------------------------
+    # Leyenda de severidad
+    # -----------------------------------------------------
+
+    st.markdown(
+        """<div class="severity-legend">
+<div class="severity-legend-title">NIVELES DE SEVERIDAD</div>
+<div class="severity-items">
+<span class="severity normal">Normal</span>
+<span class="severity medium">Medio</span>
+<span class="severity high">Alto</span>
+<span class="severity critical">Crítico</span>
+</div>
+<div class="severity-note">
+El Autoencoder considera anómalo un evento cuando el error de reconstrucción supera el umbral 0.5459.
+</div>
+</div>""",
+        unsafe_allow_html=True
     )
 
 
@@ -249,7 +268,7 @@ if "results" in st.session_state:
                 "tipo_real": "Tipo de tráfico (demo)"
             }
         ),
-        use_container_width=True,
+        width="stretch",
         hide_index=True
     )
 
@@ -317,55 +336,79 @@ if "results" in st.session_state:
             f"**{selected_row['tipo_real']}**"
         )
 
-        st.markdown("#### Interpretación")
+        # -----------------------------------------------------
+        # Interpretación y recomendación
+        # -----------------------------------------------------
 
-        #Explicación del resultado antes IA generativa
         if selected_row["alert_level"] == 3:
-            st.warning(
-                "Los dos modelos coinciden en identificar comportamiento "
-                "sospechoso. El evento debe priorizarse para su revisión."
+            interpretation = (
+                "CyberSOC-AI ha detectado indicios compatibles con actividad maliciosa "
+                "junto con un comportamiento anómalo significativo. "
+                "El evento presenta un nivel de riesgo crítico y debe priorizarse."
             )
+
+            recommendation = (
+                "Priorizar la investigación del evento, revisar las evidencias disponibles "
+                "y valorar medidas de contención si se confirma la amenaza."
+            )
+
+            recommendation_class = "critical"
 
         elif selected_row["alert_level"] == 2:
-            st.warning(
-                "El Random Forest identifica un patrón compatible con tráfico "
-                "malicioso, aunque el Autoencoder no supera su umbral de anomalía."
+            interpretation = (
+                "CyberSOC-AI ha detectado indicios compatibles con actividad maliciosa. "
+                "El evento presenta un nivel de riesgo alto y requiere revisión."
             )
 
-        elif selected_row["alert_level"] == 1:
-            st.warning(
-                "El Autoencoder detecta un comportamiento anómalo que no coincide "
-                "con los patrones de ataque conocidos por el Random Forest."
+            recommendation = (
+                "Revisar el evento y contrastarlo con otras evidencias de seguridad "
+                "antes de determinar si se trata de una amenaza real."
             )
 
-        st.markdown("#### Recomendación")
+            recommendation_class = "high"
 
-        # Recomendación básica para el analista según la severidad detectada
-        if selected_row["alert_level"] == 3:
-            st.error(
-                "Priorizar la investigación del evento. Revisar el tráfico asociado, "
-                "comprobar posibles fuentes maliciosas y valorar medidas inmediatas "
-                "de contención si se confirma la amenaza."
+        else:
+            interpretation = (
+                "CyberSOC-AI ha detectado un comportamiento anómalo que no coincide "
+                "claramente con patrones de ataque conocidos. "
+                "El evento presenta un nivel de riesgo medio."
             )
 
-        elif selected_row["alert_level"] == 2:
-            st.info(
-                "Revisar el evento y contrastarlo con otras evidencias disponibles. "
-                "El modelo supervisado identifica un patrón de ataque conocido, "
-                "por lo que conviene analizar su origen y destino."
+            recommendation = (
+                "Investigar el comportamiento detectado y contrastarlo con otras fuentes "
+                "de seguridad para determinar si corresponde a actividad legítima "
+                "o a una posible amenaza."
             )
 
-        elif selected_row["alert_level"] == 1:
-            st.info(
-                "Investigar el comportamiento anómalo y comprobar si corresponde "
-                "a una actividad legítima no observada durante el entrenamiento "
-                "o a una posible amenaza desconocida."
-            )
+            recommendation_class = "medium"
+
+        st.markdown(
+            f"""
+<div class="soc-analysis-panel interpretation-panel">
+    <div class="soc-panel-header">
+        <span class="soc-panel-label">INTERPRETACIÓN DEL SISTEMA</span>
+    </div>
+    <div class="soc-panel-text">
+        {interpretation}
+    </div>
+</div>
+
+<div class="soc-analysis-panel recommendation-panel {recommendation_class}">
+    <div class="soc-panel-header">
+        <span class="soc-panel-label">ACCIÓN RECOMENDADA</span>
+    </div>
+    <div class="soc-panel-text">
+        {recommendation}
+    </div>
+</div>
+            """,
+            unsafe_allow_html=True
+        )
         
         st.markdown("#### Análisis con IA generativa")
 
         if st.button("Generar análisis con IA", key="generate_ai_analysis"):
-            with st.spinner("Generando análisis local..."):
+            with st.spinner("Generando análisis con IA..."):
                 ai_analysis = generate_soc_analysis(
                     selected_row["Estado"],
                     selected_row["Random Forest"],
@@ -389,31 +432,4 @@ if "results" in st.session_state:
         ):
             st.markdown(st.session_state["ai_analysis"])
 
-        # -----------------------------------------------------
-        # Información del sistema
-        # -----------------------------------------------------
-
-        with st.expander("¿Cómo se interpreta el análisis?"):
-
-            st.markdown(
-                """
-                **Normal**  
-                Ninguno de los modelos identifica comportamiento sospechoso.
-
-                **Medio**  
-                El Autoencoder detecta una anomalía, aunque el Random Forest
-                no identifica un ataque conocido.
-
-                **Alto**  
-                El Random Forest identifica un patrón de tráfico malicioso,
-                aunque el Autoencoder no lo considera anómalo.
-
-                **Crítico**  
-                Random Forest y Autoencoder coinciden en identificar
-                comportamiento sospechoso.
-
-                El Autoencoder utiliza un umbral de error de reconstrucción de
-                **0.5459**. Los valores superiores a este umbral se consideran
-                anómalos.
-                """
-            )
+    

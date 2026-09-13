@@ -264,3 +264,218 @@ div[data-testid="stButton"] > button p {
         120px 120px;
 }
 
+/* ---------------------------------------------------------
+   Tarjetas - Resumen de actividad
+--------------------------------------------------------- */
+
+div[data-testid="stMetric"] {
+    background: linear-gradient(
+        145deg,
+        rgba(12, 31, 50, 0.95),
+        rgba(8, 21, 35, 0.95)
+    );
+
+    border: 1px solid rgba(67, 181, 255, 0.20);
+    border-radius: 14px;
+
+    padding: 1.1rem 1.25rem;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.18),
+        inset 0 0 25px rgba(0, 140, 255, 0.025);
+}
+
+/* Título métricas */
+div[data-testid="stMetricLabel"] {
+    color: #9fb3c8;
+    font-size: 0.9rem;
+}
+
+/* nº principal */
+div[data-testid="stMetricValue"] {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------
+   Tabla Eventos analizados
+--------------------------------------------------------- */
+
+/*Contenedor */
+div[data-testid="stDataFrame"] {
+    border: 1px solid rgba(67, 181, 255, 0.20);
+    border-radius: 12px;
+    overflow: hidden;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.16);
+}
+
+/* Fondo de la tabla */
+div[data-testid="stDataFrame"] > div {
+    background: rgba(7, 17, 31, 0.55);
+}
+
+/* ---------------------------------------------------------
+   Paneles SOC: interpretación y recomendación
+--------------------------------------------------------- */
+
+.soc-analysis-panel {
+    position: relative;
+
+    margin: 1.25rem 0;
+    padding: 1.2rem 1.35rem;
+
+    border: 1px solid rgba(67, 181, 255, 0.18);
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(12, 31, 50, 0.96),
+            rgba(7, 20, 34, 0.96)
+        );
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.16),
+        inset 0 0 25px rgba(0, 140, 255, 0.02);
+}
+
+
+/*Cabecera pequeña */
+.soc-panel-header {
+    margin-bottom: 0.65rem;
+}
+
+
+.soc-panel-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08rem;
+
+    color: #65c6ff;
+}
+
+
+/* texto prinicpal*/
+.soc-panel-text {
+    color: #d6e1ec;
+
+    font-size: 0.98rem;
+    line-height: 1.65;
+}
+
+
+/* Interpretación: azul neutro */
+.interpretation-panel {
+    border-left: 4px solid #43b5ff;
+}
+
+
+/*Recomendación según gravedad */
+.recommendation-panel.medium {
+    border-left: 4px solid #e8c547;
+}
+
+
+.recommendation-panel.high {
+    border-left: 4px solid #f39a3c;
+}
+
+
+.recommendation-panel.critical {
+    border-left: 4px solid #ff5c67;
+}
+
+
+/*cambiar el pequeño título en función de la severdidad */
+.recommendation-panel.medium .soc-panel-label {
+    color: #e8c547;
+}
+
+
+.recommendation-panel.high .soc-panel-label {
+    color: #f39a3c;
+}
+
+
+.recommendation-panel.critical .soc-panel-label {
+    color: #ff7a83;
+}
+
+/* ---------------------------------------------------------
+   Leyenda de severidad
+--------------------------------------------------------- */
+
+.severity-legend {
+    margin: 1.8rem 0 2.2rem 0;
+    padding: 1.4rem 1.5rem;
+
+    border: 1px solid rgba(67, 181, 255, 0.18);
+    border-radius: 14px;
+
+    background: rgba(8, 22, 37, 0.65);
+
+    text-align: center;
+}
+
+.severity-legend-title {
+    margin-bottom: 1rem;
+
+    color: #7bcaff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1rem;
+}
+
+.severity-items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.severity {
+    min-width: 105px;
+    padding: 0.5rem 1rem;
+
+    border-radius: 20px;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    text-align: center;
+}
+
+.severity.normal {
+    color: #77d6aa;
+    border: 1px solid rgba(80, 200, 140, 0.40);
+    background: rgba(80, 200, 140, 0.10);
+}
+
+.severity.medium {
+    color: #e8c547;
+    border: 1px solid rgba(232, 197, 71, 0.40);
+    background: rgba(232, 197, 71, 0.10);
+}
+
+.severity.high {
+    color: #f39a3c;
+    border: 1px solid rgba(243, 154, 60, 0.40);
+    background: rgba(243, 154, 60, 0.10);
+}
+
+.severity.critical {
+    color: #ff717a;
+    border: 1px solid rgba(255, 92, 103, 0.40);
+    background: rgba(255, 92, 103, 0.10);
+}
+
+.severity-note {
+    color: #8598aa;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    text-align: center;
+}

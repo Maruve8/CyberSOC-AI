@@ -17,94 +17,78 @@ def generate_soc_analysis(
     utilizando un modelo generativo local con Ollama.
     """
 
-    # La interpretación técnica se fija antes de llamar al LLM para evitar contradicciones o conclusiones inventadas.
-    if random_forest_result == "Ataque" and autoencoder_result == "Anomalía":
-        model_interpretation = (
-            "El Random Forest identifica un patrón compatible con ataques conocidos "
-            "y el Autoencoder también detecta un comportamiento anómalo."
+    # CyberSOC-AI consolida el resultado de los modelos antes de llamar al LLM.
+    # La IA generativa explica el resultado final, pero no modifica la detección.
+    if severity == "Crítico":
+        system_interpretation = (
+            "CyberSOC-AI ha detectado indicios compatibles con actividad maliciosa "
+            "junto con un comportamiento anómalo significativo. "
+            "El nivel de riesgo asignado es crítico."
         )
 
-    elif random_forest_result == "Ataque" and autoencoder_result == "Normal":
-        model_interpretation = (
-            "El Random Forest identifica un patrón compatible con ataques conocidos, "
-            "pero el Autoencoder no detecta un comportamiento anómalo."
+    elif severity == "Alto":
+        system_interpretation = (
+            "CyberSOC-AI ha detectado indicios compatibles con actividad maliciosa. "
+            "El nivel de riesgo asignado es alto."
         )
 
-    elif random_forest_result == "Normal" and autoencoder_result == "Anomalía":
-        model_interpretation = (
-            "El Random Forest no identifica un patrón de ataque conocido, "
-            "pero el Autoencoder sí detecta un comportamiento anómalo."
+    elif severity == "Medio":
+        system_interpretation = (
+            "CyberSOC-AI ha detectado un comportamiento anómalo que no coincide "
+            "claramente con patrones de ataque conocidos. "
+            "El nivel de riesgo asignado es medio."
         )
 
     else:
-        model_interpretation = (
-            "Ninguno de los dos modelos identifica indicios de amenaza en el evento."
-        )
-    
-    if reconstruction_error > threshold:
-        threshold_interpretation = (
-            "El error de reconstrucción supera el umbral del Autoencoder."
-        )
-    else:
-        threshold_interpretation = (
-            "El error de reconstrucción está por debajo del umbral del Autoencoder."
+        system_interpretation = (
+            "CyberSOC-AI no ha identificado indicios suficientes para generar "
+            "una alerta sobre este evento."
         )
 
     prompt = f"""
 Actúa como analista senior de un Security Operations Center (SOC).
 
-Analiza este resultado generado por CyberSOC-AI:
+Explica el resultado consolidado generado por CyberSOC-AI.
 
+Datos del evento:
 - Severidad: {severity}
-- Random Forest: {random_forest_result}
-- Autoencoder: {autoencoder_result}
-- Error de reconstrucción: {reconstruction_error:.4f}
-- Umbral del Autoencoder: {threshold:.4f}
 
-Interpretación técnica calculada por CyberSOC-AI:
-{model_interpretation}
-
-Interpretación del umbral:
-{threshold_interpretation}
+Interpretación calculada por CyberSOC-AI:
+{system_interpretation}
 
 Esta interpretación es un hecho proporcionado por el sistema.
-No la modifiques, no la contradigas y no vuelvas a inferir el resultado de los modelos.
+No la contradigas ni vuelvas a decidir la severidad.
 
-Reglas de interpretación obligatorias:
-- Si Random Forest = "Ataque", el modelo supervisado ha identificado
-  un patrón compatible con ataques conocidos.
-- Si Random Forest = "Normal", el modelo supervisado no ha identificado
-  un patrón de ataque conocido.
-- Si Autoencoder = "Anomalía", el error de reconstrucción supera el umbral
-  y existe un comportamiento anómalo según este modelo.
-- Si Autoencoder = "Normal", el error de reconstrucción NO supera el umbral
-  y este modelo NO considera el evento anómalo.
-- No contradigas estas reglas.
+CyberSOC-AI utiliza internamente Random Forest y Autoencoder como componentes
+complementarios de detección. Tu respuesta debe centrarse en el resultado global
+del sistema y no en comparar ambos modelos.
 
-Genera una respuesta breve y clara en español.
+No interpretes métricas internas de los modelos ni intentes explicar cómo se ha
+calculado la severidad. La clasificación y la severidad ya han sido determinadas
+por CyberSOC-AI.
 
-Incluye exactamente estos apartados:
+Genera una respuesta breve, clara y profesional en español.
+
+Incluye exactamente estos apartados y escríbelos exactamente así:
 
 ANÁLISIS:
-Explica qué indican conjuntamente ambos modelos.
+Explica qué significa el nivel de riesgo detectado por CyberSOC-AI y por qué
+el evento merece o no atención.
 
 RECOMENDACIÓN:
 Indica qué debería revisar el analista a continuación.
 
-No afirmes que existe un ataque confirmado.
+No afirmes que existe un ataque confirmado ni que se ha detectado actividad
+maliciosa de forma concluyente. Utiliza expresiones como "indicios compatibles
+con actividad maliciosa", "posible amenaza" o "evento sospechoso".
+La severidad indica el nivel de prioridad asignado por CyberSOC-AI,
+no la confirmación de una amenaza.
+No inventes datos que no hayan sido proporcionados.
+No menciones IP, puertos, usuarios, protocolos, equipos, procesos
+ni otros datos que no hayan sido proporcionados.
 
-No menciones ni recomiendes revisar IP, puertos, usuarios, protocolos,
-equipos, procesos o cualquier otro dato que no haya sido proporcionado.
-
-La recomendación debe basarse únicamente en:
-- la severidad,
-- el resultado del Random Forest,
-- el resultado del Autoencoder,
-- el error de reconstrucción,
-- el umbral del Autoencoder.
-
-Si necesitas recomendar una comprobación adicional, utiliza expresiones generales
-como "revisar evidencias adicionales del evento" o
+Utiliza recomendaciones generales como:
+"revisar evidencias adicionales del evento" o
 "contrastar el resultado con otras fuentes de seguridad".
 
 Máximo 120 palabras.
